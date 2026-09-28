@@ -1,0 +1,46 @@
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "YOUR_PROJECT_URL";
+const SUPABASE_KEY = "YOUR_PUBLISHABLE_KEY";
+
+const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+async function recordVisitor() {
+
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(
+        navigator.userAgent
+    );
+
+    let browser = "Unknown";
+
+    if (navigator.userAgent.includes("Chrome")) {
+        browser = "Chrome";
+    } else if (navigator.userAgent.includes("Firefox")) {
+        browser = "Firefox";
+    } else if (navigator.userAgent.includes("Edge")) {
+        browser = "Edge";
+    } else if (navigator.userAgent.includes("Safari")) {
+        browser = "Safari";
+    }
+
+    const { data, error } = await db
+        .from("visitors")
+        .insert({
+            page: window.location.pathname,
+            device: isMobile ? "Mobile" : "Desktop",
+            browser: browser
+        });
+
+    if (error) {
+        console.error("Visitor tracking error:", error);
+    } else {
+        console.log("Visitor recorded successfully!");
+    }
+}
+
+recordVisitor();
+</script>
